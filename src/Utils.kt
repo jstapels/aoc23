@@ -152,6 +152,27 @@ fun <T> Iterable<T>.permutations(length: Int? = null): Sequence<List<T>> =
         }
     }
 
+fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {
+    val results = mutableListOf<List<T>>()
+    var chunk = mutableListOf<T>()
+
+    forEach {
+        if (predicate(it)) {
+            results.add(chunk)
+            chunk = mutableListOf()
+        } else {
+            chunk.add(it)
+        }
+    }
+    results.add(chunk)
+
+    return results
+}
+
+fun LongRange.span() = last - start
+fun IntRange.span() = last - start
+
+
 /**
  * Reads lines from the given input txt file.
  */
