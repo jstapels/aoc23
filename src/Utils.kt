@@ -4,8 +4,9 @@ import kotlin.system.measureTimeMillis
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 
-
 const val debug = false
+
+val spaceRe = """\s+""".toRegex()
 
 val upPos = Pos(0, -1)
 val upRightPos = Pos(1, -1)
