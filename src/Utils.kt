@@ -173,6 +173,21 @@ fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {
 fun LongRange.span() = last - start
 fun IntRange.span() = last - start
 
+// From: https://www.baeldung.com/kotlin/lcm
+fun findLCM(a: Long, b: Long): Long {
+    val larger = if (a > b) a else b
+    val maxLcm = a * b
+    var lcm = larger
+    while (lcm <= maxLcm) {
+        if (lcm % a == 0L && lcm % b == 0L) {
+            return lcm
+        }
+        lcm += larger
+    }
+    return maxLcm
+}
+
+
 
 /**
  * Reads lines from the given input txt file.
