@@ -8,6 +8,7 @@ const val debug = false
 
 val spaceRe = """\s+""".toRegex()
 
+val thisPos = Pos(0, 0)
 val upPos = Pos(0, -1)
 val upRightPos = Pos(1, -1)
 val rightPos = Pos(1, 0)
