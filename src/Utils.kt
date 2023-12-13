@@ -38,29 +38,41 @@ data class Pos(val x: Int, val y: Int) {
 
 infix fun Int.by(that: Int) = Pos(this, that)
 
-data class Grid(
+data class Grid<T>(
     val width: Int,
     val height: Int,
-    val init: (i: Int) -> Int = { 0 },
-    val data: IntArray = IntArray(width * height, init)) {
+    val initialValue: T,
+    private val data: MutableList<T> = ArrayList(width * height)
+) {
+    init {
+        repeat(width * height) {
+            data.add(initialValue)
+        }
+    }
 
     val maxX = width - 1
     val maxY = height - 1
     val pos: List<Pos> by lazy { data.indices.map { toPos(it) } }
 
     private fun checkBounds(x: Int, y: Int) {
-        if (x !in 0 until width) throw IllegalArgumentException("$x out of bounds for grid with width $width")
-        if (y !in 0 until height) throw IllegalArgumentException("$y out of bounds for grid with width $height")
+        if (x !in 0 ..< width) throw IllegalArgumentException("$x out of bounds for grid with width $width")
+        if (y !in 0 ..< height) throw IllegalArgumentException("$y out of bounds for grid with height $height")
     }
+
+    fun row(y: Int) =
+        data.slice(y * width..<(y+1) * width)
+
+    fun col(x: Int) =
+        data.filterIndexed { i, _ -> i % width == x }
 
     operator fun get(x: Int, y: Int) =
         checkBounds(x, y).let { data[y * width + x] }
 
-    operator fun set(x: Int, y: Int, v: Int) =
+    operator fun set(x: Int, y: Int, v: T) =
         checkBounds(x, y).let { data[y * width + x] = v }
 
     operator fun get(p: Pos) = get(p.x, p.y)
-    operator fun set(p: Pos, v: Int) = set(p.x, p.y, v)
+    operator fun set(p: Pos, v: T) = set(p.x, p.y, v)
 
 
     fun toPos(idx: Int) =
@@ -71,32 +83,6 @@ data class Grid(
     fun orthos(p: Pos) = p.orthos().filter { inBounds(it) }
 
     fun adjacents(p: Pos) = p.adjacents().filter { inBounds(it) }
-
-    override fun toString(): String {
-        return "${this.javaClass.simpleName}(width=$width, height=$height, data=${data.contentToString()})"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Grid
-
-        if (width != other.width) return false
-        if (height != other.height) return false
-        if (init != other.init) return false
-        if (!data.contentEquals(other.data)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = width
-        result = 31 * result + height
-        result = 31 * result + init.hashCode()
-        result = 31 * result + data.contentHashCode()
-        return result
-    }
 }
 
 fun Int.pad(n: Int) =
