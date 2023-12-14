@@ -91,6 +91,11 @@ fun Int.pad(n: Int) =
 operator fun <T> Array<Array<T>>.get(x: Int, y: Int) =
     this[x][y]
 
+fun List<CharSequence>.col(col:Int) =
+    map { it[col] }
+        .joinToString("")
+
+
 // From: https://www.reddit.com/r/Kotlin/comments/isg16h/comment/g5fvsw3/?utm_source=share&utm_medium=web2x&context=3
 fun <T> Iterable<T>.combinations(length: Int): Sequence<List<T>> =
     sequence {
