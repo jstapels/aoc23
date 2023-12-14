@@ -39,14 +39,21 @@ data class Pos(val x: Int, val y: Int) {
 infix fun Int.by(that: Int) = Pos(this, that)
 
 data class Grid<T>(
-    val width: Int,
-    val height: Int,
-    val initialValue: T,
+    private val width: Int,
+    private val height: Int,
     private val data: MutableList<T> = ArrayList(width * height)
 ) {
-    init {
+    constructor(width: Int, height: Int, initialValue: T) : this(width, height) {
         repeat(width * height) {
             data.add(initialValue)
+        }
+    }
+
+    constructor(data: Collection<Collection<T>>) : this(data.first().size, data.size, data.first().first()) {
+        data.forEachIndexed { row, entry ->
+            entry.forEachIndexed { col, value ->
+                this[col, row] = value
+            }
         }
     }
 
@@ -83,6 +90,8 @@ data class Grid<T>(
     fun orthos(p: Pos) = p.orthos().filter { inBounds(it) }
 
     fun adjacents(p: Pos) = p.adjacents().filter { inBounds(it) }
+
+    fun dump() = (0..maxY).forEach { println(row(it)) }
 }
 
 fun Int.pad(n: Int) =
@@ -95,6 +104,14 @@ fun List<CharSequence>.col(col:Int) =
     map { it[col] }
         .joinToString("")
 
+fun <T> List<T>.indexOf(element: T, startIndex: Int): Int {
+    var i = startIndex
+    while (i < size) {
+        if (get(i) == element) return i
+        i++
+    }
+    return -1
+}
 
 // From: https://www.reddit.com/r/Kotlin/comments/isg16h/comment/g5fvsw3/?utm_source=share&utm_medium=web2x&context=3
 fun <T> Iterable<T>.combinations(length: Int): Sequence<List<T>> =
