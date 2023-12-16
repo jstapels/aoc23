@@ -18,6 +18,14 @@ val downLeftPos = Pos(-1, 1)
 val leftPos = Pos(-1, 0)
 val upLeftPos = Pos(-1, -1)
 
+enum class Dir(val pos: Pos) {
+    UP (upPos),
+    RIGHT (rightPos),
+    DOWN (downPos),
+    LEFT (leftPos)
+}
+
+
 val orthoPos = listOf(upPos, rightPos, downPos, leftPos)
 val adjacentPos = listOf(upPos, upRightPos, rightPos, downRightPos, downPos, downLeftPos, leftPos, upLeftPos)
 
@@ -48,13 +56,11 @@ data class Grid<T>(
             data.add(initialValue)
         }
     }
+    constructor(data: Collection<Collection<T>>) : this(data.first().size, data.size, data.flatten().toMutableList())
 
-    constructor(data: Collection<Collection<T>>) : this(data.first().size, data.size, data.first().first()) {
-        data.forEachIndexed { row, entry ->
-            entry.forEachIndexed { col, value ->
-                this[col, row] = value
-            }
-        }
+    companion object {
+        fun fromStrings(data: List<String>) =
+            Grid(data[0].length, data.size, data.flatMap { it.toList() }.toMutableList())
     }
 
     val maxX = width - 1
