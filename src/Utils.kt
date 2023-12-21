@@ -47,16 +47,16 @@ data class Pos(val x: Int, val y: Int) {
 infix fun Int.by(that: Int) = Pos(this, that)
 
 data class Grid<T>(
-    private val width: Int,
-    private val height: Int,
-    private val data: MutableList<T> = ArrayList(width * height)
+    val width: Int,
+    val height: Int,
+    val data: MutableList<T> = ArrayList(width * height)
 ) {
     constructor(width: Int, height: Int, initialValue: T) : this(width, height) {
         repeat(width * height) {
             data.add(initialValue)
         }
     }
-    constructor(data: Collection<Collection<T>>) : this(data.first().size, data.size, data.flatten().toMutableList())
+    constructor (data: Collection<Collection<T>>) : this(data.first().size, data.size, data.flatten().toMutableList())
 
     companion object {
         fun fromStrings(data: List<String>) =
@@ -98,6 +98,10 @@ data class Grid<T>(
     fun adjacents(p: Pos) = p.adjacents().filter { inBounds(it) }
 
     fun dump() = (0..maxY).forEach { println(row(it)) }
+
+    val indices get() = (0..maxX).flatMap { x ->
+        (0..maxY).map { y -> x by y}
+    }
 }
 
 fun Int.pad(n: Int) =
@@ -185,8 +189,15 @@ fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {
     return results
 }
 
+fun List<String>.split() = this.split { it.isBlank() }
+
 fun LongRange.span() = last - start
+
+fun LongRange.size() = last - start + 1
+
 fun IntRange.span() = last - start
+
+fun IntRange.size() = last - start + 1
 
 // From: https://www.baeldung.com/kotlin/lcm
 fun findLCM(a: Long, b: Long): Long {
